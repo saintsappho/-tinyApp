@@ -1,0 +1,24 @@
+{
+  "name": "tinyApp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "curl": "^0.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saintsappho/-tinyApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saintsappho/-tinyApp/issues"
+  },
+  "homepage": "https://github.com/saintsappho/-tinyApp#readme"
+}
