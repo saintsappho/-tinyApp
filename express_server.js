@@ -22,6 +22,10 @@ app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
  });
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+ })
  
 app.get("/urls/:id", (req, res) => {
 const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
