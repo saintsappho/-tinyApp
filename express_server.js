@@ -57,6 +57,12 @@ app.post("/urls/delete/:id", (req, res) => {
   // urlDatabase = (urlDatabase.splice(key, 1)) -- not an array, cannot splice.
   res.redirect("/urls");
 });
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  console.log('setting cookie!')
+  res.cookie('username', username)
+  res.redirect("/urls");
+});
 
 app.post("/urls/edit/:id", (req, res) => {
   const key = req.params.id;
