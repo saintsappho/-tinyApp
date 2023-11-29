@@ -60,9 +60,8 @@ app.post("/urls/delete/:id", (req, res) => {
 
 app.post("/urls/edit/:id", (req, res) => {
   const key = req.params.id;
-  console.log(req.params)
-  urlDatabase[key] = {}
-  // urlDatabase = (urlDatabase.splice(key, 1)) -- not an array, cannot splice.
+  const updatedLongURL = req.body.longURL;
+  urlDatabase[key] = updatedLongURL;
   res.redirect("/urls");
 });
 
