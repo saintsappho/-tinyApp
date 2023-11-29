@@ -12,8 +12,11 @@ const generateRandomString = function () {
 app.set("view engine", "ejs")
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: 'http://www.lighthouselabs.ca',
+  '9sm5xK': 'http://www.google.com',
+  wlzau: 'http://www.discord.com',
+  imrro: 'http://web.compass.lighthouselabs.ca',
+  l89ty: 'http://www.youtube.com'
 };
 
 app.use(express.urlencoded({ extended: true }));
@@ -27,14 +30,17 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get('/show/:key', (req, res) => {
-  console.log('req.params', req.params);
   const id = req.params;
   const templateVars = {
     url: urlDatabase[id]
   };
   res.render('show')
-  
 })
+
+app.get("/urls/edit/:id", (req, res) => {
+  const templateVars = {urls: urlDatabase, longURL: urlDatabase[req.params.id], id: req.params.id};
+  res.render('urls_edit', templateVars);
+});
 
 app.get("/set", (req, res) => {
   const a = 1;
@@ -45,9 +51,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
  })
  
-app.get("/urls/delete/:id", (req, res) => {
+app.post("/urls/delete/:id", (req, res) => {
   const key = req.params.id;
   delete urlDatabase[key];
+  // urlDatabase = (urlDatabase.splice(key, 1)) -- not an array, cannot splice.
+  res.redirect("/urls");
+});
+
+app.post("/urls/edit/:id", (req, res) => {
+  const key = req.params.id;
+  console.log(req.params)
+  urlDatabase[key] = {}
   // urlDatabase = (urlDatabase.splice(key, 1)) -- not an array, cannot splice.
   res.redirect("/urls");
 });
