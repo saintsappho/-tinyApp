@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta cjarset="utf-8"/>
+    <meta charset="utf-8" />
     <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+
+    <!-- Bootstrap CSS -->
     <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous""
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
     />
-    <title>TinyApp</title>
+
+    <title>TinyApp URLs</title>
   </head>
+
   <body>
+    <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
       <table class="table">
@@ -22,13 +27,16 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL </th>
+            <!-- <th scope="col">Adjustments </th> -->
           </tr>
         </thead>
         <tbody>
           <% for (let id in urls) { %> 
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
+              <td><a href="/urls/<%= id %>"><%= id %></a></td>
+              <td><a href="/u/<%= id %>"><%= urls[id] %></a></td>
+              <td><a href="/urls/delete/<%= id %>">🗑️</a></td>
+              <td><a href="/urls/edit/<%= id %>">✏️</a></td>
             </tr>
           <% } %>
         </tbody>

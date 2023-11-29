@@ -1,4 +1,5 @@
 const { randomFill } = require("crypto");
+const { REFUSED } = require("dns");
 const express = require("express");
 const { url } = require("inspector");
 const app = express();
@@ -25,6 +26,16 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get('/show/:key', (req, res) => {
+  console.log('req.params', req.params);
+  const id = req.params;
+  const templateVars = {
+    url: urlDatabase[id]
+  };
+  res.render('show')
+  
+})
+
 app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
@@ -33,12 +44,26 @@ app.get("/set", (req, res) => {
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
  })
+ 
+app.get("/urls/delete/:id", (req, res) => {
+  const key = req.params.id;
+  delete urlDatabase[key];
+  // urlDatabase = (urlDatabase.splice(key, 1)) -- not an array, cannot splice.
+  res.redirect("/urls");
+});
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); 
-  res.send("Ok"); 
+  let random = generateRandomString()
+  urlDatabase[random] = req.body['longURL'] 
+  res.redirect("/urls")
+})
+
+app.get("/u/:id", (req, res) => {
+  const id = req.params.id;
+  const longURL = urlDatabase[id]
+  res.redirect(longURL);
 });
- 
+
 app.get("/urls/:id", (req, res) => {
 const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
@@ -55,5 +80,5 @@ app.get("/urls", (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
