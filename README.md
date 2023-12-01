@@ -21,7 +21,7 @@
 ### Attempting to log in to a user that doesnt exist will send you to a page 
 ### saying so.
 
-### !["Screenshot of account not found error page"](account_not_found.png)
+### !["Screenshot of account not found error page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/account_not_found.png)
 
 ### You will have to register to make an account. This will also sign you in 
 ### and redirect you to the "home" page at http://localhost:8080/urls 
