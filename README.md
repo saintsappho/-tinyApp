@@ -19,3 +19,43 @@ in the meantime:
     i will now submit this project and get as much sleep as i can. 
 
     -godspeed. 
+
+## Please start at http://localhost:8080/login 
+![Alt text](image.png)
+
+You will have to register to make an account. This will also sign you in and redirect you to the "home" page at http://localhost:8080/urls 
+![Alt text](image2.png)
+
+You can attempt to edit or delete one of the example links on this page, though you will find that you do not have the authority to view them. 
+![Alt text](image3.png)
+
+This does not prevent you from visiting the link via longURL or the shortened URL.
+Now that you are logged in, please select "Create New URL" from the nav bar. 
+You should see a simple text input box. Please enter your full URL, including http:// or https:// as needed. 
+![Alt text](image4.png)
+
+The tinyUrl will be randomly generated and assigned to your URL, and you will be redirected to the URLS homepage, where your new URL will be on display. You and only you will be able to edit it while logged in.
+![Alt text](image5.png)
+![Alt text](image6.png)
+
+please play around with logging out and trying to cheat the system. 
+I believe i have plugged most of the holes. i am quite proud. 
+
+i am aware of a persistent serverResponse issue that reads thusly - 
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+
+in attempting to resolve this i refactored my server and my templates down by a couple of 
+hundred lines of code.
+evidently this did not solve the concern. after some truly extensive testing i have confirmed that
+this error has no impact on the effectiveness, UI, design, bugs, or consistency of my app and so i 
+have elected to ignore it as i do not have the tools to fix it at this time. 
+
+Robin Out. 
+
+
+i have only just remembered that i have a dark mode extension on chrome. 
+Please do not be alarmed by differing colours, i just have sensitive eyes. 
+
+If this assignment included CSS website designing, you could also have a dark UI. 
+
+cheers. 

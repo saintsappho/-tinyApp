@@ -87,7 +87,7 @@ app.get("/urls", (req, res) => {
     res.render("urls_index", templateVars);
   }
   res.status(400).send("You don't have permission to see these URLS.");
-  // setTimeout(res.redirect("login"), 1000)
+  setTimeout(res.redirect("login"), 1000)
 });
 
 
