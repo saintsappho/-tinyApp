@@ -96,7 +96,8 @@ app.get("/urls", (req, res) => {
     const templateVars = { urls: urlDatabase, user };
     res.render("urls_index", templateVars);
   }
-  res.redirect("login");
+  res.status(400).send("You don't have permission to see these URLS.");
+  // setTimeout(res.redirect("login"), 1000)
 });
 
 
@@ -122,6 +123,7 @@ app.get("/urls/:id", (req, res) => {
     const templateVars = { longURL, user, id };
     res.render("urls_show", templateVars);
   }
+  res.status(400).send("You don't have permission to see this URL.");
   res.redirect("login");
 });
 
@@ -170,7 +172,7 @@ app.post("/logout", (req, res) => {
 // view / edit / post //
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-app.get("/edit/:id", (req, res) => {
+app.get("/urls/:id", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
   console.log('database check:', urlDatabase[req.params.id].user_id)
@@ -190,13 +192,15 @@ app.get("/edit/:id", (req, res) => {
 });
 
 app.post("/urls/edit/:id", (req, res) => {
-  const key = req.params.id;
-  console.log('key: ', key)
+  const id = req.params.id;
   const updatedLongURL = req.body.longURL;
-  console.log('updatedLongURL: ', updatedLongURL)
-  if (req.cookies.userId === urlDatabase[key].userId) {
-    urlDatabase[key].longURL = updatedLongURL;
+  const user_id = req.cookies.user_id
+  console.log('id: ', id)
+  console.log('urlDatabase[id].user_id: ', urlDatabase[id].user_id)
+  if (user_id !== urlDatabase[id].user_id) {
+    return res.status(400).send("You don't have permission to edit this URL");
   }
+  urlDatabase[id].longURL = updatedLongURL;
   res.redirect("/urls");
 });
 
