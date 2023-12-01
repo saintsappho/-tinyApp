@@ -13,12 +13,26 @@ const getUserByEmail = function(users, email) {
 
 const checkLogIn = function(users, cookie) {
   for (let userId in users) {
-    if (users[userId].id === cookie.user_id) {
+    if (users[userId].id === cookie.userId) {
       return true;
     }
   }
   return false;
 };
 
-module.exports = { generateRandomString, getUserByEmail, checkLogIn }
+const fetchUserUrls = (urlDatabase, userId) => {
+  let userUrls = {};
+  for (let shortUrl in urlDatabase) {
+    // console.log('shortURL', shortUrl)
+    console.log('urlDatabase', urlDatabase)
+    // console.log('urlDatabase[shortUrl].longURL', urlDatabase[shortUrl].longURL)
+    if (urlDatabase[shortUrl].userId == userId) {
+      userUrls[shortUrl] = urlDatabase[shortUrl].longURL;
+    }
+  }
+  console.log('userUrls', userUrls)
+  return userUrls;
+};
+
+module.exports = { generateRandomString, getUserByEmail, checkLogIn, fetchUserUrls }
 

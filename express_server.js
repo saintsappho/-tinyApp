@@ -10,7 +10,7 @@ const app = express();
 const morgan = require('morgan');
 const bcrypt = require("bcryptjs");
 const PORT = 8080; // default port 8080
-const { generateRandomString, getUserByEmail, checkLogIn } = require('./helpers');
+const { generateRandomString, getUserByEmail, checkLogIn, fetchUserUrls } = require('./helpers');
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // setup / config//
@@ -33,11 +33,11 @@ app.use(cookieSession({
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 const urlDatabase = {
-  'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', user_id: null },
-  '9sm5xK': { longURL: 'http://www.google.com', user_id: null },
-  'wlzau': { longURL: 'http://www.discord.com', user_id: null },
-  'imrro': { longURL: 'http://web.compass.lighthouselabs.ca', user_id: null },
-  'l89ty': { longURL: 'http://www.youtube.com', user_id: null }
+  'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userId: null },
+  '9sm5xK': { longURL: 'http://www.google.com', userId: null },
+  'wlzau': { longURL: 'http://www.discord.com', userId: null },
+  'imrro': { longURL: 'http://web.compass.lighthouselabs.ca', userId: null },
+  'l89ty': { longURL: 'http://www.youtube.com', userId: null }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,52 +81,66 @@ const { get } = require("curl");
 
 app.get("/urls", (req, res) => {
   if (checkLogIn(users, (req.session))) {
-    const userId = req.session.user_id;
+    const userId = req.session.userId;
+    const userURLS = fetchUserUrls(urlDatabase, userId)
     const user = users[userId];
-    const templateVars = { urls: urlDatabase, user };
-    res.render("urls_index", templateVars);
+    const templateVars = { urls: userURLS, user };
+    return res.render("urls_index", templateVars);
   }
   res.status(400).send("You don't have permission to see these URLS.");
   setTimeout(res.redirect("login"), 1000)
 });
 
 
-app.get("/new", (req, res) => {
-  if (checkLogIn(users, (req.session))) {
-    const userId = req.session.user_id;
-    const user = users[userId];
-
-    const templateVars = { user };
-    res.render("urls_new", templateVars);
-  }
-  res.redirect("login");
-});
-
 
 app.get("/urls/:id", (req, res) => {
   if (checkLogIn(users, (req.session))) {
     const id = req.params.id;
     const longURL = urlDatabase[id].longURL;
-    const userId = req.session.user_id;
+    const userId = req.session.userId;
     const user = users[userId];
-
+    
     const templateVars = { longURL, user, id };
-    res.render("urls_show", templateVars);
+    return res.render("urls_show", templateVars);
   }
   res.status(400).send("You don't have permission to see this URL.");
   res.redirect("login");
 });
 
-app.get("/login", (req, res) => {
-  if (!checkLogIn(req.session)) {
-    res.render("login", { user: null });
+/////////////////////////////////////////////////////////////////////////////////////////////
+// views / new //
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+app.get("/new", (req, res) => {
+  if (checkLogIn(users, (req.session))) {
+    const userId = req.session.userId;
+    const user = users[userId];
+    
+    const templateVars = { user };
+    return res.render("urls_new", templateVars);
   }
-  res.redirect("urls");
+  res.redirect("login");
+});
+
+app.post("/urls", (req, res) => {
+  let random = generateRandomString();
+  if (checkLogIn(users, (req.session))) {
+    urlDatabase[random] = { longURL: req.body['longURL'], userId: req.session.userId };
+  }
+  
+  res.redirect("/urls");
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // login checks//
 /////////////////////////////////////////////////////////////////////////////////////////////
+
+app.get("/login", (req, res) => {
+  if (checkLogIn(users, req.session)) {
+    return res.redirect("urls");
+  }
+  res.render("login", { user: null });
+});
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
@@ -141,7 +155,7 @@ app.post("/login", (req, res) => {
   if (!bcrypt.compareSync(password, users[id].password)) {
     return res.send(400, `\nThat password is Incorrect. This is a Debugging message that is a known security risk.`);
   }
-  req.session.user_id = id;
+  req.session.userId = id;
   res.redirect("urls");
 });
 
@@ -151,7 +165,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   if (!checkLogIn(users, req.session)) {
-    res.render("login", { user: null });
+    return res.render("login", { user: null });
   }
   console.log('You have signed out');
   req.session = null;
@@ -163,18 +177,17 @@ app.post("/logout", (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 app.get("/urls/:id", (req, res) => {
-  const userId = req.session.user_id;
+  const userId = req.session.userId;
   const user = users[userId];
-  console.log('database check:', urlDatabase[req.params.id].user_id);
   if (!checkLogIn(req.session)) {
-    res.render("login", { user: null });
+    return res.render("login", { user: null });
   }
-  if (userId !== urlDatabase[req.params.id].user_id) {
+  if (userId !== urlDatabase[req.params.id].userId) {
   }
 
   const templateVars = {
     urls: urlDatabase,
-    user_id: req.session.user_id,
+    userId: req.session.userId,
     users: users
   };
   res.render("urls_edit", templateVars);
@@ -184,10 +197,8 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
   const updatedLongURL = req.body.longURL;
-  const user_id = req.session.user_id;
-  console.log('id: ', id);
-  console.log('urlDatabase[id].user_id: ', urlDatabase[id].user_id);
-  if (user_id !== urlDatabase[id].user_id) {
+  const userId = req.session.userId;
+  if (userId !== urlDatabase[id].userId) {
     return res.status(400).send("You don't have permission to edit this URL");
   }
   urlDatabase[id].longURL = updatedLongURL;
@@ -200,7 +211,7 @@ app.post("/urls/edit/:id", (req, res) => {
 
 app.post("/urls/delete/:id", (req, res) => {
   const key = req.params.id;
-  if (req.session.user_id === urlDatabase[key].user_id) {
+  if (req.session.userId === urlDatabase[key].userId) {
     delete urlDatabase[key];
   }
   res.redirect("/urls");
@@ -214,27 +225,14 @@ app.post("/urls/delete/:id", (req, res) => {
 //   res.json(urlDatabase);
 // });
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// views / new //
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-app.post("/urls", (req, res) => {
-  let random = generateRandomString();
-  if (checkLogIn(users, (req.session))) {
-    urlDatabase[random] = { longURL: req.body['longURL'], user_id: req.session.user_id };
-  }
-  res.redirect("/urls");
-});
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // register //
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 app.get("/register", (req, res) => {
-  if (!checkLogIn(req.session)) {
-    res.render("register", { user: null });
+  if (!checkLogIn(users, req.session)) {
+    return res.render("register", { user: null });
   }
   res.redirect("urls");
 });
@@ -249,8 +247,7 @@ app.post("/register", (req, res) => {
   }
   let id = generateRandomString();
   users[id] = { id, email, password };
-  console.log('users: ', users);
-  req.session.user_id = id;
+  req.session.userId = id;
   res.redirect("/urls");
 });
 
@@ -272,7 +269,7 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[id].longURL;
   for (indURL in urlDatabase) {
     if (id === indURL)
-      res.redirect(longURL);
+      return res.redirect(longURL);
   }
   return res.status(404).send('This shortened URL does not exist');
 });
