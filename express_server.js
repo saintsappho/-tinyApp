@@ -241,10 +241,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
-  if (email === '') {
-    return res.send(400, '\nPlease enter a valid email AND password. <br><a href=/register> Try Again!</a>');
-  }
-  if (password === '') {
+  if (!email || !req.body.password) {
     return res.send(400, '\nPlease enter a valid email AND password. <br><a href=/register> Try Again!</a>');
   }
   if (getUserByEmail(users, email) !== false) {
