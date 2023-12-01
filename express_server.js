@@ -275,7 +275,16 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("You've been logged out!");
+  if (!checkLogIn(users, req.session)) {
+    return res.render("login", { user: null });
+  }
+  {
+  const userId = req.session.userId;
+  const userURLS = fetchUserUrls(urlDatabase, userId)
+  const user = users[userId];
+  const templateVars = { urls: userURLS, user };
+  return res.render("urls_index", templateVars);
+  }
 });
 
 module.exports = { users, urlDatabase };
