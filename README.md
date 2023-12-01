@@ -1,7 +1,6 @@
 # im not gonna lie to you
 #### this project was probably too much to ask of me this week. 
-#### but here i am, submitting, almost on time. I know that my code could be cleaner,
-#### i know that there are a few things id like to improve.
+#### but here i am, submitting, almost on time. I know that my code could be cleaner, i know that there are a few things id like to improve.
 #### i would prefere to submit a functional, if imperfect product "on time" (okay, just over an hour past the deadline,) than submit a more refined product LATE.
 #### 
 #### I will continue to refine this and hope that i may submit an improved version for code review if not for grading. Thanks for reading my ramble.
