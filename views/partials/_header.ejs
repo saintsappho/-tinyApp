@@ -7,10 +7,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-
-        <a class="nav-item nav-link" href="/">Home</a>
+        <!-- <a class="nav-item nav-link" href="/">Home</a> -->
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
         <a class="nav-item nav-link" href="/register">Register</a>
       </div>
     </div>
@@ -21,13 +21,7 @@
           <button type="submit" class="btn btn-primary">Logout</button>
         </form>
         <% } else { %>
-          <form class="form-inline" action="/login" method="POST">
-            <div class="form-group mb2">
-              <input class="form-control" type="text" name="user_id" placeholder="Enter user_id"
-                style="width: 200px; margin: 1em" />
-              <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-          </form>
+          <a  href="/login"><form class="btn btn-primary" action="/login" method="get">Log In</form></a>
           <% } %>
     </div>
   </nav>

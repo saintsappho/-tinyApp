@@ -15,11 +15,13 @@
 </head>
 <body>
   <%- include('partials/_header') %>
-  <form class="text-center" action="/register" method="POST">
+  <br>
+  <h1>Create Account:</h1>
+  <form class="text-left" action="/register" method="POST">
     <div class="form-group mb-2">
       <label for="new user_id">user_id: </label>
       <input
-        class="form-control-center"
+        class="form-control"
         type="email"
         name="email"
         placeholder="user_id"
@@ -28,7 +30,7 @@
       <br>
       <label for="new password">Password:</label>
       <input
-        class="form-control-center"
+        class="form-control"
         type="text"
         name="password"
         placeholder="Password"

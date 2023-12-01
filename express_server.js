@@ -12,6 +12,14 @@ const PORT = 8080; // default port 8080
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 7);
 };
+const getUserByEmail = function(email) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return user;
+    }
+  } return false;
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // setup / config//
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,8 +28,21 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Users //
+// Database //
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+const urlDatabase = {
+  'b2xVn2': 'http://www.lighthouselabs.ca',
+  '9sm5xK': 'http://www.google.com',
+  'wlzau': 'http://www.discord.com',
+  'imrro': 'http://web.compass.lighthouselabs.ca',
+  'l89ty': 'http://www.youtube.com'
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Database / Users //
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 const users = {
@@ -35,20 +56,12 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk",
   },
+  buttso: {
+    id: "buttso",
+    email: "robinrosefleur@gmail.com",
+    password: "chocoCHIP",
+  }
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-// database //
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
-  'wlzau': 'http://www.discord.com',
-  'imrro': 'http://web.compass.lighthouselabs.ca',
-  'l89ty': 'http://www.youtube.com'
-};
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // app.listener //
@@ -59,20 +72,19 @@ app.listen(PORT, () => {
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Using Register cookie //
+// Cookie Sharing System //
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 const cookieParser = require('cookie-parser');
 const { receiveMessageOnPort } = require("worker_threads");
+const { get } = require("curl");
 app.use(cookieParser());
 
 app.get("/urls", (req, res) => {
-  console.log('req.cookies: ', req.cookies);
   const userId = req.cookies.user_id;
   const user = users[userId];
 
   const templateVars = { urls: urlDatabase, user };
-  console.log('templateVar: ', templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -80,50 +92,59 @@ app.get("/new", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
 
-  const templateVars = {user};
-  console.log('templateVar: ', templateVars);
+  const templateVars = { user };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id
-  const longURL = urlDatabase[id]
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
   const userId = req.cookies.user_id;
   const user = users[userId];
-  
-  const templateVars = {longURL, user, id};
-  console.log('templateVar: ', templateVars);
+
+  const templateVars = { longURL, user, id };
   res.render("urls_show", templateVars);
 });
 
 app.get("/edit", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
-  
+
   const templateVars = {
     urls: urlDatabase,
     user_id: req.cookies["user_id"],
     users: users
   };
-  console.log('templateVar: ', templateVars);
   res.render("urls_edit", templateVars);
 });
 
 app.get("/register", (req, res) => {
-  res.render("register", {user: null});
+  res.render("register", { user: null });
 });
 
+app.get("/login", (req, res) => {
+  res.render("login", { user: null });
+});
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// login / set cookie  //
+// login checks//
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 app.post("/login", (req, res) => {
-  const user_id = req.body.user_id;
-  res.cookie('user_id', user_id);
-  res.cookie('users', users);
-  console.log('signed in as: ', user_id);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+  let id = getUserByEmail(email);
+  if (email === '' || password === ''){
+    return res.send(400, '\nPlease enter your email AND password.')
+  }
+  if (!id){
+    return res.send(400, `\nNo account currently exists under that email, please Register!`)
+  }
+  if (password !== users[id].password) {
+    return res.send(400, `\nThat password is Incorrect. This is a Debugging tool.`)
+  }
+  res.cookie('user_id', id);
+  res.redirect("urls")
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,9 +154,8 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   console.log('You have signed out',);
   res.clearCookie('user_id');
-  res.redirect("/");
+  res.redirect("login");
 });
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // view / edit / post //
@@ -209,11 +229,18 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+
 app.post("/register", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password
+  const password = req.body.password;
+  if (email === '' || password === '') {
+    return res.send(400, '\nPlease enter a valid email AND password.');
+  }
+  if (getUserByEmail(email) !== false) {
+    return res.send(400, '\nAn account already exists under that email.');
+  }
   let id = generateRandomString();
-  users[id] = {id, email, password };
+  users[id] = { id, email, password };
   res.cookie('user_id', id);
   res.redirect("/urls");
 });
