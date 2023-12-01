@@ -10,28 +10,7 @@ const app = express();
 const morgan = require('morgan');
 const bcrypt = require("bcryptjs");
 const PORT = 8080; // default port 8080
-const generateRandomString = function() {
-  return Math.random().toString(36).substring(2, 7);
-};
-const getUserByEmail = function(email) {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return user;
-    }
-  } return false;
-};
-
-const checkLogIn = function(cookie) {
-  console.log('cookie: ', cookie)
-  for (let user in users) {
-    if (user === cookie.user_id) {
-      return true;
-    };
-  }
-  return false;
-};
-
-
+const { generateRandomString, getUserByEmail, checkLogIn } = require('./helpers');
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // setup / config//
@@ -44,9 +23,10 @@ var cookieSession = require('cookie-session')
 app.use(cookieSession({
   name: 'session',
   keys: ['butts'],
-// Cookie Options
-maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Database //
@@ -78,7 +58,7 @@ const users = {
   buttso: {
     id: "buttso",
     email: "robinrosefleur@gmail.com",
-    password: "$2a$10$.ba.hlAeX0mxslvWVc.5zuEQtDZAIT34iFB78HUUgch8RdL6nqrVC",
+    password: "$2a$10$BIQeTOxuzU4j9iswtJ/4X.eDBfzcccd53/EThiNEZ51NBdLH96AR.",
   }
 };
 
@@ -100,7 +80,7 @@ const { receiveMessageOnPort } = require("worker_threads");
 const { get } = require("curl");
 
 app.get("/urls", (req, res) => {
-  if (checkLogIn((req.session))) {
+  if (checkLogIn(users, (req.session))) {
     const userId = req.session.user_id;
     const user = users[userId];
     const templateVars = { urls: urlDatabase, user };
@@ -112,7 +92,7 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/new", (req, res) => {
-  if (checkLogIn(req.session)) {
+  if (checkLogIn(users, (req.session))) {
     const userId = req.session.user_id;
     const user = users[userId];
 
@@ -124,7 +104,7 @@ app.get("/new", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  if (checkLogIn(req.session)) {
+  if (checkLogIn(users, (req.session))) {
     const id = req.params.id;
     const longURL = urlDatabase[id].longURL;
     const userId = req.session.user_id;
@@ -151,15 +131,15 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  let id = getUserByEmail(email);
+  let id = getUserByEmail(users, email);
   if (email === '' || password === '') {
     return res.send(400, '\nPlease enter your email AND password.');
   }
   if (!id) {
-    return res.send(400, `\nNo account currently exists under that email, please Register!`);
+    return res.send(400, `\nNo account currently exists under that email, please Register!This is a Debugging message that is a known security risk.`);
   }
-  if (bcrypt.compareSync(password, users[id].password)) {
-    return res.send(400, `\nThat password is Incorrect. This is a Debugging tool.`);
+  if (!bcrypt.compareSync(password, users[id].password)) {
+    return res.send(400, `\nThat password is Incorrect. This is a Debugging message that is a known security risk.`);
   }
   req.session.user_id = id;
   res.redirect("urls");
@@ -170,7 +150,7 @@ app.post("/login", (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 app.post("/logout", (req, res) => {
-  if (!checkLogIn(req.session)) {
+  if (!checkLogIn(users, req.session)) {
     res.render("login", { user: null });
   }
   console.log('You have signed out');
@@ -194,7 +174,7 @@ app.get("/urls/:id", (req, res) => {
 
   const templateVars = {
     urls: urlDatabase,
-    user_id: req.session.user_id, /////////////////////////////////************************ */
+    user_id: req.session.user_id,
     users: users
   };
   res.render("urls_edit", templateVars);
@@ -242,7 +222,7 @@ app.post("/urls/delete/:id", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let random = generateRandomString();
-  if (checkLogIn(req.session)) {
+  if (checkLogIn(users, (req.session))) {
     urlDatabase[random] = { longURL: req.body['longURL'], user_id: req.session.user_id };
   }
   res.redirect("/urls");
@@ -258,14 +238,13 @@ app.get("/register", (req, res) => {
   }
   res.redirect("urls");
 });
-
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
   if (email === '' || password === '') {
     return res.send(400, '\nPlease enter a valid email AND password.');
   }
-  if (getUserByEmail(email) !== false) {
+  if (getUserByEmail(users, email) !== false) {
     return res.send(400, '\nAn account already exists under that email.');
   }
   let id = generateRandomString();
@@ -302,3 +281,4 @@ app.get("/", (req, res) => {
   res.send("You've been logged out!");
 });
 
+module.exports = {users, urlDatabase}
