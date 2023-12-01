@@ -26,27 +26,27 @@ cheers, and godspeed.
 
 ### Please start at http://localhost:8080/login 
 
-!["Screenshot of login page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/login.png)
+!["Screenshot of login page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/login.png)
 
 #You will have to register to make an account. This will also sign you in and redirect you to the "home" page at http://localhost:8080/urls 
 
-!["Screenshot of URLS page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/URLs_index.png)
+!["Screenshot of URLS page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/URLs_index.png)
 
 #You can attempt to edit or delete one of the example links on this page, though you will find that you do not have the authority to view them. 
 
-!["Screenshot of restricted access to edit page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/restricted_access.png)
+!["Screenshot of restricted access to edit page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/restricted_access.png)
 
 #This does not prevent you from visiting the link via longURL or the shortened URL.
 Now that you are logged in, please select "Create New URL" from the nav bar. 
 You should see a simple text input box. Please enter your full URL, including http:// or https:// as needed. 
 
-!["Screenshot of new URL page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/create_new.png)
+!["Screenshot of new URL page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/create_new.png)
 
 #The tinyUrl will be randomly generated and assigned to your URL, and you will be redirected to the URLS homepage, where your new URL will be on display. You and only you will be able to edit it while logged in.
 
-!["Screenshot of updated Index page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/updated_index.png)
+!["Screenshot of updated Index page"](https://github.com/saintsappho/-tinyApp/tree/master/docs/updated_index.png)
 
-!["Screenshot of edit page for our very sleepy URL"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/edit_URL.png)
+!["Screenshot of edit page for our very sleepy URL"](https://github.com/saintsappho/-tinyApp/tree/master/docs/edit_URL.png)
 
 #please play around with logging out and trying to cheat the system. 
 I believe i have plugged most of the holes. i am quite proud. 
