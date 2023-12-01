@@ -87,7 +87,7 @@ app.get("/urls", (req, res) => {
     const templateVars = { urls: userURLS, user };
     return res.render("urls_index", templateVars);
   }
-  res.status(400).send("You don't have permission to see these URLS.");
+  res.status(400).send("You don't have permission to see these URLS. <br><a href=/login> Please Login!</a>");
   setTimeout(res.redirect("login"), 1000)
 });
 
@@ -103,7 +103,9 @@ app.get("/urls/:id", (req, res) => {
     const templateVars = { longURL, user, id };
     return res.render("urls_show", templateVars);
   }
-  res.status(400).send("You don't have permission to see this URL.");
+  res.status(400).send("You don't have permission to see this URL.<br><a href=/login> Please Login!</a>");
+
+
   res.redirect("login");
 });
 
@@ -147,13 +149,13 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   let id = getUserByEmail(users, email);
   if (email === '' || password === '') {
-    return res.send(400, '\nPlease enter your email AND password.');
+    return res.send(400, '\nPlease enter your email AND password. <br><a href=/login> Try Again!</a>');
   }
   if (!id) {
-    return res.send(400, `\nNo account currently exists under that email, please Register!This is a Debugging message that is a known security risk.`);
+    return res.send(400, `\nNo account currently exists under that email, please Register!This is a Debugging message that is a known security risk.<br><a href=/login> Try Again!</a>`);
   }
   if (!bcrypt.compareSync(password, users[id].password)) {
-    return res.send(400, `\nThat password is Incorrect. This is a Debugging message that is a known security risk.`);
+    return res.send(400, `\nThat password is Incorrect. This is a Debugging message that is a known security risk.<br><a href=/login> Try Again!</a>`);
   }
   req.session.userId = id;
   res.redirect("urls");
@@ -199,7 +201,7 @@ app.post("/urls/edit/:id", (req, res) => {
   const updatedLongURL = req.body.longURL;
   const userId = req.session.userId;
   if (userId !== urlDatabase[id].userId) {
-    return res.status(400).send("You don't have permission to edit this URL");
+    return res.status(400).send("You don't have permission to edit this URL<br><a href=/login> Login!</a>");
   }
   urlDatabase[id].longURL = updatedLongURL;
   res.redirect("/urls");
@@ -239,11 +241,14 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
-  if (email === '' || password === '') {
-    return res.send(400, '\nPlease enter a valid email AND password.');
+  if (email === '') {
+    return res.send(400, '\nPlease enter a valid email AND password. <br><a href=/register> Try Again!</a>');
+  }
+  if (password === '') {
+    return res.send(400, '\nPlease enter a valid email AND password. <br><a href=/register> Try Again!</a>');
   }
   if (getUserByEmail(users, email) !== false) {
-    return res.send(400, '\nAn account already exists under that email.');
+    return res.send(400, '\nAn account already exists under that email. <br><a href=/register> Try Again!</a> <br><a href=/login> Login!</a>');
   }
   let id = generateRandomString();
   users[id] = { id, email, password };
