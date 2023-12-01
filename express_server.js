@@ -8,6 +8,7 @@ const { url } = require("inspector");
 const express = require("express");
 const app = express();
 const morgan = require('morgan');
+const bcrypt = require("bcryptjs");
 const PORT = 8080; // default port 8080
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 7);
@@ -28,6 +29,8 @@ const checkLogIn = function(cookies) {
   }
   return false;
 };
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // setup / config//
@@ -58,17 +61,17 @@ const users = {
   '56bn89': {
     id: "56bn89",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: "$2a$10$jA7MrXv24A4JCjdDNboLjeLegsBfWUG.4tOWp93v5aUBWl/ESiFQ6",
   },
   po28do: {
     id: "po28do",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: "$2a$10$jaNkL00kc4/uFHDk1PGxCuYJrEeSl5475bzGEqrnqi45rbu/NwYoi",
   },
   buttso: {
     id: "buttso",
     email: "robinrosefleur@gmail.com",
-    password: "chocoCHIP",
+    password: "$2a$10$.ba.hlAeX0mxslvWVc.5zuEQtDZAIT34iFB78HUUgch8RdL6nqrVC",
   }
 };
 
@@ -148,7 +151,7 @@ app.post("/login", (req, res) => {
   if (!id) {
     return res.send(400, `\nNo account currently exists under that email, please Register!`);
   }
-  if (password !== users[id].password) {
+  if (bcrypt.compareSync(password, users[id].password)) {
     return res.send(400, `\nThat password is Incorrect. This is a Debugging tool.`);
   }
   res.cookie('user_id', id);
@@ -175,7 +178,7 @@ app.post("/logout", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
-  console.log('database check:', urlDatabase[req.params.id].user_id)
+  console.log('database check:', urlDatabase[req.params.id].user_id);
   if (!checkLogIn(req.cookies)) {
     res.render("login", { user: null });
   }
@@ -194,9 +197,9 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/edit/:id", (req, res) => {
   const id = req.params.id;
   const updatedLongURL = req.body.longURL;
-  const user_id = req.cookies.user_id
-  console.log('id: ', id)
-  console.log('urlDatabase[id].user_id: ', urlDatabase[id].user_id)
+  const user_id = req.cookies.user_id;
+  console.log('id: ', id);
+  console.log('urlDatabase[id].user_id: ', urlDatabase[id].user_id);
   if (user_id !== urlDatabase[id].user_id) {
     return res.status(400).send("You don't have permission to edit this URL");
   }
@@ -251,7 +254,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
   if (email === '' || password === '') {
     return res.send(400, '\nPlease enter a valid email AND password.');
   }
@@ -260,6 +263,7 @@ app.post("/register", (req, res) => {
   }
   let id = generateRandomString();
   users[id] = { id, email, password };
+  console.log('users: ', users);
   res.cookie('user_id', id);
   res.redirect("/urls");
 });
