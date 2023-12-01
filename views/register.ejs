@@ -1,47 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><head>
-  <!-- Bootstrap CSS -->
-  <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-    crossorigin="anonymous"
-  />
-</head>
+
+<head>
+
+  <head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
+  </head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
 </head>
+
 <body>
   <%- include('partials/_header') %>
-  <br>
-  <h1>Create Account:</h1>
-  <form class="text-left" action="/register" method="POST">
-    <div class="form-group mb-2">
-      <label for="new user_id">user_id: </label>
-      <input
-        class="form-control"
-        type="email"
-        name="email"
-        placeholder="user_id"
-        style="width: 300px; margin: 1em"
-      />
-      <br>
-      <label for="new password">Password:</label>
-      <input
-        class="form-control"
-        type="text"
-        name="password"
-        placeholder="Password"
-        style="width: 300px; margin: 1em"
-      />
-      <br>
-      <input type="submit" value="Register" />
-    </div>
-  </form>
-  <br><br>
-  <h5>Already have an account?</h5>
-  <button><a href="/login">Login Here!</a></button>
+    <br>
+    <h1>Create Account:</h1>
+    <form class="text-left" action="/register" method="POST">
+      <div class="form-group mb-2">
+        <label for="new user_id">user_id: </label>
+        <input class="form-control" type="email" name="email" placeholder="user_id" style="width: 300px; margin: 1em" />
+        <br>
+        <label for="new password">Password:</label>
+        <input class="form-control" type="text" name="password" placeholder="Password"
+          style="width: 300px; margin: 1em" />
+        <br>
+        <input type="submit" value="Register" />
+      </div>
+    </form>
+    <br><br>
+    <h5>Already have an account?</h5>
+    <button><a href="/login">Login Here!</a></button>
 </body>
+
 </html>

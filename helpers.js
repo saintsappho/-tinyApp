@@ -1,4 +1,4 @@
-const {users} = require('./express_server')
+const { users } = require('./express_server');
 
 const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 7);
@@ -20,5 +20,5 @@ const checkLogIn = function(users, cookie) {
   return false;
 };
 
-module.exports = { generateRandomString, getUserByEmail, checkLogIn} 
+module.exports = { generateRandomString, getUserByEmail, checkLogIn }
 

@@ -13,7 +13,7 @@
         <% if (!user) { %>
           <a class="nav-item nav-link" href="/login">Login</a>
           <a class="nav-item nav-link" href="/register">Register</a>
-        <% } %>
+          <% } %>
       </div>
     </div>
     <div class="form-group mb2">
@@ -22,7 +22,9 @@
           <button type="submit" class="btn btn-primary">Logout</button>
         </form>
         <% } else { %>
-          <a  href="/login"><form class="btn btn-primary" action="/login" method="get">Log In</form></a>
+          <a href="/login">
+            <form class="btn btn-primary" action="/login" method="get">Log In</form>
+          </a>
           <% } %>
     </div>
   </nav>

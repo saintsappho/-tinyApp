@@ -19,13 +19,13 @@ const { generateRandomString, getUserByEmail, checkLogIn } = require('./helpers'
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-var cookieSession = require('cookie-session')
+var cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ['butts'],
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,4 +281,4 @@ app.get("/", (req, res) => {
   res.send("You've been logged out!");
 });
 
-module.exports = {users, urlDatabase}
+module.exports = { users, urlDatabase };
